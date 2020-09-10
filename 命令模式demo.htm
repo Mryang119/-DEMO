@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>命令模式</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      .commands-container {
+        width: 200px;
+        background-color: rgb(53, 186, 201);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        float: left;
+      }
+      .order-container {
+        width: 200px;
+        background-color: rgb(187, 225, 21);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        float: left;
+      }
+      li {
+        cursor: pointer;
+      }
+      li:hover {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- 菜单列表 -->
+      <div class="commands-container">
+        <h3>菜单列表</h3>
+        <ul class="commands">
+          <li cmd="xhscjd">西红柿炒鸡蛋</li>
+          <li cmd="kgcjd">苦瓜炒鸡蛋</li>
+          <li cmd="ljclj">辣椒炒辣椒</li>
+          <li cmd="jdcjd">鸡蛋炒鸡蛋</li>
+        </ul>
+      </div>
+      <!-- 订单详情 -->
+      <div class="order-container">
+        <h3>订单详情</h3>
+        <ul class="order"></ul>
+      </div>
+      <!-- 回撤 -->
+      <button id="undo">undo</button>
+    </div>
+    <script>
+      // 充当服务员解耦
+      class Command {
+        constructor (commands) {
+          this.commands = commands
+          this.oldCommands = [] // 记录命令
+        }
+        execute (type) {
+          let id = this.commands[type].execute().id
+          this.oldCommands.push(id) // 缓存订单id用于撤回
+        }
+        undo () {
+          let last = this.oldCommands.pop()
+          let id = `#${last}`
+          let oldLi = document.querySelector(id)
+          let parent = oldLi.parentNode
+          parent.removeChild(oldLi)
+        }
+      }
+      // 菜单集合
+      let menu = {
+        xhscjd: {
+          execute: function () {
+            let order = document.querySelector('.order-container')
+            let li = document.createElement('li')
+            let id = 'data-' + Date.now() + Math.ceil(Math.random() * 99)
+            li.id = id
+            li.innerText = '西红柿炒鸡蛋'
+            order.appendChild(li)
+            // 返回一个用于撤回的订单id
+            return {
+              id
+            }
+          }
+        },
+        kgcjd: {
+          execute: function () {
+            let order = document.querySelector('.order-container')
+            let li = document.createElement('li')
+            let id = 'data-' + Date.now() + Math.ceil(Math.random() * 99)
+            li.id = id
+            li.innerText = '苦瓜炒鸡蛋'
+            order.appendChild(li)
+            return {
+              id
+            }
+          }
+        },
+        ljclj: {
+          execute: function () {
+            let order = document.querySelector('.order-container')
+            let li = document.createElement('li')
+            let id = 'data-' + Date.now() + Math.ceil(Math.random() * 99)
+            li.id = id
+            li.innerText = '辣椒炒辣椒'
+            order.appendChild(li)
+            return {
+              id
+            }
+          }
+        },
+        jdcjd: {
+          execute: function () {
+            let order = document.querySelector('.order-container')
+            let li = document.createElement('li')
+            let id = 'data-' + Date.now() + Math.ceil(Math.random() * 99)
+            li.id = id
+            li.innerText = '鸡蛋炒鸡蛋'
+            order.appendChild(li)
+            return {
+              id
+            }
+          }
+        }
+      }
+      // 实例化服务员
+      let fuwuyuan = new Command(menu)
+      let lis = document.querySelectorAll('.commands>li')
+      ;[...lis].map(item => {
+        item.addEventListener('click', function () {
+          fuwuyuan.execute(item.getAttribute('cmd'))
+        })
+      })
+      let btn = document.querySelector('#undo')
+      btn.addEventListener('click', function () {
+        fuwuyuan.undo()
+      })
+    </script>
+  </body>
+</html>
