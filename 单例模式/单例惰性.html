@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // 剥离的步骤,让这个函数变得通用
+      var getSingle = function (fn) {
+        var result
+        return function () {
+          return result || (result = fn.apply(this, arguments))
+        }
+      }
+
+      var createIframe = function () {
+        let iframe = document.createElement('iframe')
+        iframe.style.display = 'none'
+        document.body.appendChild(iframe)
+        return iframe
+      }
+
+      var createDiv = function () {
+        let div = document.createElement('div')
+        div.innerHTML = '我是登录窗口'
+        div.style.display = 'none'
+        document.body.appendChild(div)
+        return div
+      }
+
+      let createDivSingle = getSingle(createDiv)
+      createDivSingle().style.display = 'block'
+      createDivSingle().style.display = 'block'
+      createDivSingle().style.display = 'block'
+      createDivSingle().style.display = 'block'
+      // 我们调用了好几次页面上依旧只有一个登陆窗口
+    </script>
+  </body>
+</html>
